@@ -1,0 +1,494 @@
+---
+title: "Basic Stats in R"
+author: "Drezdan"
+date: '2023-01-20'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+
+str(faithful)
+
+head(faithful)
+
+tail(faithful)
+
+
+```
+```{r}
+hist(faithful$waiting, main = "Waiting Time between Eruptions")
+
+```
+```{r}
+faithful %>%
+  ggplot(aes(waiting)) + geom_histogram(binwidth = 5, fill = "#9da6f2", color = "white", boundary = 0) +
+  labs(y = 'Frequency',
+       x = "Time",
+       title = "Waiting Time Between Eruptions") +
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
+
+
+##boundary specifies where bins start from, binwidth specifies length of the actual bins
+```
+
+
+
+```{r}
+
+
+bird_malaria_data = read.csv("https://raw.githubusercontent.com/ddale23/data_422/main/bird_malaria.csv", 
+                             stringsAsFactors = TRUE)
+
+head(bird_malaria_data)
+
+```
+
+
+```{r}
+
+str(bird_malaria_data)
+
+```
+
+
+
+```{r}
+
+treatment_grouped = 
+bird_malaria_data %>%
+  group_by(treatment) %>%
+  count()
+
+```
+
+
+```{r}
+
+treatment_grouped %>%
+  ggplot(aes(x = treatment)) + geom_bar()
+
+```
+```{r}
+##can just do it like this
+bird_malaria_data %>%
+  ggplot(aes(treatment)) + geom_bar(color = "#afb4c9", fill = "#9da6f2") +
+  theme_bw() + 
+  labs( x = "Treatment",
+        y = "Frequency", 
+        title = "Treatment Frequency") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text = element_text(size = 15)) 
+  
+
+```
+
+```{r}
+
+data_table = table(bird_malaria_data$response, bird_malaria_data$treatment)
+data_table 
+
+barplot(data_table, beside = TRUE, xlab = "Treatment", ylab = "# of Birds", col = c("blue", "yellow"))
+legend("topright", c("malaria", "no-malaria"), fill = c("blue", "yellow"))
+
+```
+
+
+```{r}
+
+table(bird_malaria_data$treatment)
+
+```
+
+
+
+
+```{r}
+
+bird_response = table(bird_malaria_data$response)
+
+barplot(bird_response)
+
+```
+
+
+
+
+```{r}
+
+read.csv(stringsAsFactors = TRUE)
+
+
+```
+
+
+
+```{r}
+
+guppy_data =
+  read.csv("https://raw.githubusercontent.com/ddale23/data_422/main/GuppyFatherSonAttractiveness.csv")
+
+
+head(guppy_data)
+
+```
+```{r}
+
+guppy_cor = round(cor(guppy_data$fatherOrnamentation, guppy_data$sonAttractiveness), 2)
+
+guppy_data %>%
+  ggplot(aes(fatherOrnamentation, sonAttractiveness)) + 
+  geom_point(size = 3.5, alpha = 0.7, color = "Black") +
+  geom_smooth(method = 'lm', se = F, color = "navy") + 
+  theme_bw() + 
+  labs( x = "Father Ornamentation",
+        y = "Son Attractiveness", 
+        title = "Guppy Father's Ornamentation compared to Son's Attractiveness") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text = element_text(size = 15)) +
+  annotate(geom = "label", x = 0.9, y = 0.0, label = paste("Correlation", guppy_cor), color = "red")
+
+
+```
+
+
+```{r}
+
+cor(guppy_data$fatherOrnamentation, guppy_data$sonAttractiveness)
+
+
+```
+
+
+```{r}
+hemoglobin_data = read.csv("https://raw.githubusercontent.com/ddale23/data_422/main/HumanHemoglobinElevation.csv",
+                           stringsAsFactors = TRUE)
+
+```
+
+
+```{r}
+head(hemoglobin_data)
+
+```
+
+
+```{r}
+
+hemoglobin_data %>%
+  ggplot(aes(hemoglobin, population)) + geom_boxplot(alpha = 0.7) +
+  theme_bw() +
+  labs( x = "Hemoglobin",
+        y = "Population", 
+        title = "Boxplots of each Population's Hemoglobin") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text = element_text(size = 12))
+
+```
+
+
+```{r}
+#subsetting data --> extracting a part of the data from the dataset
+
+#this filters data from dataset for Andes population
+
+hemoglobin_data %>%
+  ggplot(aes(hemoglobin)) + geom_histogram(fill = "#9da6f2", color = "black", boundary = 0, closed= 'left') +
+facet_wrap(~population, scales = "free_y") +
+  theme_bw() +
+  labs(x = "Hemoglobin",
+       y = "Frequency",
+       title = "Hemoglobin Frequency by Population Subset")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        axis.title = element_text(face = "bold"),
+        axis.text = element_text(size = 12),
+        strip.background = element_rect(fill = "#9da6f2"))
+  
+
+
+#this returns just the hemoglobin for Andes population
+hist(hemoglobin_data$hemoglobin[hemoglobin_data$population == 'Andes'],
+     main = 'Bh for Andes', xlab = "Bh Levels" , ylab = 'Frequency')
+
+
+
+```
+
+## Data 422 Review
+<!-- number of Cylinders as predictors and gasoline as response -->
+<!-- SAT and GPA as predictors, College Admission as response -->
+<!-- There is not a linear relationship between the two because they both depend on each other -->
+<!-- Assets and Sales as Predictors, Return as Response -->
+<!-- Distance and Weather as predictors, Time as response -->
+
+
+
+## SLR Review
+
+```{r}
+guppy_data
+
+```
+
+## then run scatterplot on dataset
+
+##what test do we run to test the correlation: test of correlation
+cor.test(guppy_data$)
+
+```{r}
+
+cor.test(guppy_data$fatherOrnamentation, guppy_data$sonAttractiveness)
+
+
+```
+
+<!-- <!-- output from above --? --> -->
+
+<!-- p value is very very small. -->
+<!-- the p-value tells us that there is a relationship between the two variables. There is a linear reltaionship in the population based on the sample -->
+
+
+<!-- 95% confidence interval is the population coefficient -->
+
+
+
+
+<!-- <!-- --> -->
+
+
+
+
+
+#Linear Regression 
+```{r}
+
+guppy_regression = lm(guppy_data$fatherOrnamentation ~ guppy_data$sonAttractiveness)
+
+summary(lm(guppy_data$fatherOrnamentation ~ guppy_data$sonAttractiveness))
+
+```
+
+## yhat = b0 + b1x
+
+## bo = intercept
+## b1 = slope
+
+## interpretation of slope: for every unit increase in FatherOrnamentation, son attractiveness increases by 0.9823 units
+
+## when using linear regression, the following assumptions myst be met for all tests and predictions:
+
+## at each value of X, there is a population of possible y values, whose mean lies on the true regression line (this is the assumption that the relationship must be linear)
+
+## at each value of X, the distribution of possible Y-values is normal
+## the variance of Y-Values is the same at all values of X (homskedasicity)
+
+##at each value of X, the Y-measurements reporesent a random sample form the population of possible Y values
+
+
+
+## yhat = Beta0 + Beta1 * xi
+
+## Error = True Values - Observed Values
+## Error Assumptions:
+1. Linearity: The Relationship between X and Y must be linear
+2. Independence of Errors: There should be no error that is dependent on Y
+3. Normality of Errors
+4. Equal Variances of Errors (Homoscedasticity)
+
+
+Residual: how far the observed values fall from the estimated model
+
+
+Residual plots
+
+```{r}
+
+residuals(guppy_regression)
+
+
+```
+
+
+
+```{r}
+#### Residual Diagnosis ####
+
+## Linearity Assumption
+
+## checking this assumption by examining a scatterplot of x and y
+## the residual plot shows no major deviations from the assumptions of linear regression.
+
+##for the Indepence of Errors: Residuals vs fitted plot
+plot(guppy_regression)
+
+##assumption is not violated as there is not a pattern to the data
+
+## Q-Q plot: Normal distribution plot
+## a q-q plot --> if on a straight line, does not violate
+## -- can also get a histogram of the residual OR normality test (Shapiro Wilk test)
+
+
+```
+
+Assumption of Linear Regression
+1. Linearity --> Scatterplot of X & Y
+2. Independence of Errors --> Scatterplot of fitted values (yhat) and residuals (y-yhat)
+3. Normality --> QQ plot
+4. Equality of Variance --> Scatterplot of fitted values (yhat) and residuals (y-yhat)
+
+(Both assumption 2 & 4 use the same diagnostic plot)
+
+
+
+Independence of Errors assumptions are not violated as we do not observe any relationship/pattern in the plot
+
+
+
+
+## Normality of Errors: The residuals myst be approximately normally distributed
+Check this assumption by observing a QQ plot
+
+the observations of the sample should be near the line. You can also examine a histogram of the residuals -- it should be approximately normally distributed. Or you could do a Shapiro-Wilk normality test
+
+
+
+
+
+
+Based on QQ plot from above, there are a few outliers that impact the shape of the error distribution from being normal. Otherwise, most of the observations are almost on a straight line
+
+
+## Equality of Variances of error
+The variance of residuals is the same for all values of X
+Check this assumption by examining the scatterplot of residuals vs fitted
+Want to find that the variance of the residuals is the same for all values of X
+If the plot shows a pattern (ex: bowl of funnel shape) then variances are not constant and this assumption is violated
+
+
+
+Her example was met; mine had a V occurring, which showed a pattern.
+
+
+
+
+
+##Hypothesis testing on parameters
+H0: B1 = 0 
+Ha: B1 != 0
+
+If we reject Ha, then we violate the Linearity assumption as: Y = B0 + B1 x + E becomes Y = B0 + E, which is a line parralel to the x axis. There would be no linearity.
+
+testing of hypothesis
+
+
+```{r}
+## Testing of Hypothesis
+
+summary(guppy_regression)
+
+
+```
+# this supports that we rare supposed to reject H0; since 6.78e-05 is less than 0.05, we reject the null hypothesis and conclude that there is significant linear relationship between son's attractiveness and father ornamentation
+
+
+# I have Son Attractiveness to predict Father Ornamentation. It should be other way around(Banorjee has Father Ornamentation to predict Son Attractiveness)
+
+
+
+##confidence intervals of parameters
+
+```{r}
+
+confint(guppy_regression)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
